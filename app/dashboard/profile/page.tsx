@@ -55,8 +55,7 @@ export default function ProfilePage() {
     router.push("/");
   };
 
-  if (!user) { router.push("/login"); return null; }
-
+if (!user) return null;
   return (
     <div className="min-h-screen bg-cream-light">
       <Navbar />
