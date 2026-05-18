@@ -223,7 +223,7 @@ export default function StatistikPage() {
                       <div
                         className="h-1.5 rounded-full transition-all"
                         style={{
-                          width: `${(a.value / (topAuthors[0]?.value || 1)) * 100}%`,
+                          width: `${((a.value as number) / ((topAuthors[0]?.value as number) || 1)) * 100}%`,
                           backgroundColor: COLORS[i % COLORS.length],
                         }}
                       />
