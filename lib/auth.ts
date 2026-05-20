@@ -30,7 +30,7 @@ export const getImageUrl = (filename: string | null) => {
 return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "https://backendreport-production-cd31.up.railway.app"}/uploads/${filename}`;};
 
 export const isAdmin = (user: User | null) =>
-  user?.role === "admin" || user?.role === "super_admin";
+  user?.role === "admin" ;
 
 export const isSuperAdmin = (user: User | null) =>
   user?.role === "super_admin";
