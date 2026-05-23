@@ -88,4 +88,10 @@ export const userApi = {
   delete: (id: number) => api.delete(`/users/admin/users/${id}`),
 };
 
+export const notificationApi = {
+  getAll: () => api.get("/notifications"),
+  markAsRead: (id: number) => api.patch(`/notifications/${id}/read`),
+  markAllAsRead: () => api.patch("/notifications/read-all"),
+};
+
 export default api;
