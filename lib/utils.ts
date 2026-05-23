@@ -26,5 +26,6 @@ export function formatDate(dateStr: string) {
 
 export function getImageUrl(filename: string | null) {
   if (!filename) return null;
-  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://localhost:3000"}/uploads/${filename}`;
+  if (filename.startsWith("http")) return filename;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "https://backendreport-production-cd31.up.railway.app"}/uploads/${filename}`;
 }
