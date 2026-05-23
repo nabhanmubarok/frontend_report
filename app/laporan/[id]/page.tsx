@@ -23,6 +23,7 @@ export default function ReportDetailPage() {
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(true);
   const [commLoading, setCommLoading] = useState(false);
+  const imageUrl = getImageUrl(report.image);
 
   // Edit state
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -132,7 +133,6 @@ export default function ReportDetailPage() {
   );
   if (!report) return null;
 
-  const imageUrl = getImageUrl(report.image);
   const isOwner = user?.id === report.user_id;
 
   return (
