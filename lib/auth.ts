@@ -27,8 +27,10 @@ export const clearAuth = () => {
 
 export const getImageUrl = (filename: string | null) => {
   if (!filename) return null;
-return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "https://backendreport-production-cd31.up.railway.app"}/uploads/${filename}`;};
-
+  // Kalau sudah URL cloudinary, langsung return
+  if (filename.startsWith('http')) return filename;
+  return `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "https://backendreport-production-cd31.up.railway.app"}/uploads/${filename}`;
+};
 export const isAdmin = (user: User | null) =>
   user?.role === "admin" ;
 
