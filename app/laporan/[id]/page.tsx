@@ -23,9 +23,6 @@ export default function ReportDetailPage() {
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(true);
   const [commLoading, setCommLoading] = useState(false);
-  const imageUrl = getImageUrl(report.image);
-
-  // Edit state
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -69,15 +66,8 @@ export default function ReportDetailPage() {
     }
   };
 
-  const startEdit = (c: any) => {
-    setEditingId(c.id);
-    setEditText(c.body);
-  };
-
-  const cancelEdit = () => {
-    setEditingId(null);
-    setEditText("");
-  };
+  const startEdit = (c: any) => { setEditingId(c.id); setEditText(c.body); };
+  const cancelEdit = () => { setEditingId(null); setEditText(""); };
 
   const saveEdit = async (cid: number) => {
     if (!editText.trim()) return;
@@ -133,6 +123,8 @@ export default function ReportDetailPage() {
   );
   if (!report) return null;
 
+  // Letakkan SETELAH null check
+  const imageUrl = getImageUrl(report.image);
   const isOwner = user?.id === report.user_id;
 
   return (
@@ -145,7 +137,6 @@ export default function ReportDetailPage() {
         </Link>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Main */}
           <div className="md:col-span-2 space-y-5">
             <div className="card p-6">
               <div className="flex items-start justify-between gap-4 mb-4">
@@ -166,7 +157,6 @@ export default function ReportDetailPage() {
               </div>
             </div>
 
-            {/* Comments */}
             <div className="card p-6">
               <h2 className="font-display font-semibold text-stone-700 mb-5 flex items-center gap-2">
                 <MessageCircle className="w-4 h-4 text-primary" />
@@ -179,14 +169,10 @@ export default function ReportDetailPage() {
                     {user.username.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1">
-                    <textarea
-                      placeholder="Tulis komentar Anda..."
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
+                    <textarea placeholder="Tulis komentar Anda..."
+                      value={commentText} onChange={(e) => setCommentText(e.target.value)}
                       className="input resize-none mb-2" rows={2}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitComment(); }
-                      }}
+                      onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submitComment(); } }}
                     />
                     <button onClick={submitComment} disabled={commLoading || !commentText.trim()}
                       className="btn-primary text-sm py-1.5 px-4 flex items-center gap-2">
@@ -216,42 +202,32 @@ export default function ReportDetailPage() {
                         <span className="text-sm font-bold text-stone-700">{c.commenter}</span>
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs text-stone-400">{formatDate(c.created_at)}</span>
-                          {/* Tombol edit – hanya pemilik komentar */}
                           {user?.id === c.user_id && editingId !== c.id && (
                             <button onClick={() => startEdit(c)}
-                              className="text-stone-300 hover:text-primary transition-colors" title="Edit">
+                              className="text-stone-300 hover:text-primary transition-colors">
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                           )}
-                          {/* Tombol hapus – pemilik atau admin */}
                           {(user?.id === c.user_id || isAdmin(user)) && editingId !== c.id && (
                             <button onClick={() => deleteComment(c.id)}
-                              className="text-stone-300 hover:text-red-500 transition-colors" title="Hapus">
+                              className="text-stone-300 hover:text-red-500 transition-colors">
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           )}
                         </div>
                       </div>
-
-                      {/* Mode edit */}
                       {editingId === c.id ? (
                         <div className="space-y-2">
-                          <textarea
-                            value={editText}
-                            onChange={(e) => setEditText(e.target.value)}
-                            className="input resize-none text-sm" rows={2}
-                            autoFocus
-                          />
+                          <textarea value={editText} onChange={(e) => setEditText(e.target.value)}
+                            className="input resize-none text-sm" rows={2} autoFocus />
                           <div className="flex gap-2">
                             <button onClick={() => saveEdit(c.id)} disabled={editLoading || !editText.trim()}
                               className="flex items-center gap-1.5 text-xs font-bold bg-sage/10 text-sage-dark hover:bg-sage/20 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-50">
-                              <Check className="w-3.5 h-3.5" />
-                              {editLoading ? "Menyimpan..." : "Simpan"}
+                              <Check className="w-3.5 h-3.5" />{editLoading ? "Menyimpan..." : "Simpan"}
                             </button>
                             <button onClick={cancelEdit}
                               className="flex items-center gap-1.5 text-xs font-bold bg-stone-100 text-stone-500 hover:bg-stone-200 px-3 py-1.5 rounded-lg transition-colors">
-                              <X className="w-3.5 h-3.5" />
-                              Batal
+                              <X className="w-3.5 h-3.5" />Batal
                             </button>
                           </div>
                         </div>
@@ -265,7 +241,6 @@ export default function ReportDetailPage() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-5">
             {(report.address || report.latitude) && (
               <div className="card p-5">
