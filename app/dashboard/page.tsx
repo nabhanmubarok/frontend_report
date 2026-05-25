@@ -14,6 +14,7 @@ interface Report {
   body: string;
   status: string;
   author: string;
+  author_avatar: string | null;
   category_name: string;
   address: string | null;
   image: string | null;
