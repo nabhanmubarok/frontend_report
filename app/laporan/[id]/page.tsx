@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import Navbar from "@/components/layout/Navbar";
 import StatusBadge from "@/components/ui/StatusBadge";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import { reportApi, commentApi } from "@/lib/api";
+import { reportApi, commentApi, authApi } from "@/lib/api";
 import { getUser, isAdmin } from "@/lib/auth";
 import { formatDate, getImageUrl } from "@/lib/utils";
 import {
@@ -27,10 +27,17 @@ export default function ReportDetailPage() {
   const [editText, setEditText] = useState("");
   const [editLoading, setEditLoading] = useState(false);
 
-  useEffect(() => {
-    const { getUser: _getUser } = require("@/lib/auth");
-    setUser(_getUser());
-  }, []);
+ useEffect(() => {
+  const { getUser: _getUser } = require("@/lib/auth");
+  const u = _getUser();
+  setUser(u);
+  if (u) {
+    authApi.getProfile().then((r) => {
+      if (r.data.data.avatar) setAvatar(r.data.data.avatar);
+    }).catch(() => {});
+  }
+}, []);
+  
 
   const loadReport = async () => {
     try {
@@ -94,6 +101,7 @@ export default function ReportDetailPage() {
       toast.error("Gagal menghapus komentar");
     }
   };
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   const updateStatus = async (status: string) => {
     try {
@@ -122,6 +130,8 @@ export default function ReportDetailPage() {
     </div>
   );
   if (!report) return null;
+
+  
 
   // Letakkan SETELAH null check
   const imageUrl = getImageUrl(report.image);
@@ -165,9 +175,13 @@ export default function ReportDetailPage() {
 
               {user ? (
                 <div className="flex gap-3 mb-6">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-                    {user.username.charAt(0).toUpperCase()}
-                  </div>
+                  {avatar ? (
+  <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+) : (
+  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+    {user.username.charAt(0).toUpperCase()}
+  </div>
+)}
                   <div className="flex-1">
                     <textarea placeholder="Tulis komentar Anda..."
                       value={commentText} onChange={(e) => setCommentText(e.target.value)}
@@ -194,9 +208,14 @@ export default function ReportDetailPage() {
                   <p className="text-stone-400 text-sm text-center py-4">Belum ada komentar</p>
                 ) : comments.map((c: any) => (
                   <div key={c.id} className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-secondary text-stone-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      {c.commenter.charAt(0).toUpperCase()}
-                    </div>
+                    {c.commenter_avatar ? (
+  <img src={c.commenter_avatar} alt={c.commenter}
+    className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+) : (
+  <div className="w-8 h-8 rounded-full bg-secondary text-stone-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+    {c.commenter.charAt(0).toUpperCase()}
+  </div>
+)}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-bold text-stone-700">{c.commenter}</span>

@@ -138,9 +138,13 @@ export default function AdminUsersPage() {
                     <td className="px-4 py-3 text-stone-400 font-mono">#{u.id}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
-                          {u.username.charAt(0).toUpperCase()}
-                        </div>
+                        {u.avatar ? (
+  <img src={u.avatar} alt={u.username} className="w-7 h-7 rounded-full object-cover" />
+) : (
+  <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
+    {u.username.charAt(0).toUpperCase()}
+  </div>
+)}
                         <span className="font-bold text-stone-700">{u.username}</span>
                         {u.id === user?.id && (
                           <span className="badge bg-amber-100 text-amber-700 border-amber-200 text-xs">Anda</span>
