@@ -297,7 +297,7 @@ export default function ReportDetailPage() {
               </div>
             )}
 
-            {(isOwner || isAdmin(user)) && (
+            {isOwner && (
               <div className="card p-5">
                 <h3 className="font-display font-semibold text-stone-700 mb-3">Kelola Laporan</h3>
                 <button onClick={deleteReport}
