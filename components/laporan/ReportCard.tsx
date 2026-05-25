@@ -15,6 +15,7 @@ interface Report {
   image: string | null;
   comment_count: number;
   created_at: string;
+  author_avatar: string | null;
 }
 
 export default function ReportCard({ report }: { report: Report }) {
@@ -64,9 +65,13 @@ export default function ReportCard({ report }: { report: Report }) {
           </div>
 
           <div className="mt-3 pt-3 border-t border-stone-100 flex items-center gap-2">
-            <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
-              {report.author.charAt(0).toUpperCase()}
-            </div>
+            {report.author_avatar ? (
+  <img src={report.author_avatar} alt={report.author} className="w-5 h-5 rounded-full object-cover" />
+) : (
+  <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
+    {report.author.charAt(0).toUpperCase()}
+  </div>
+)}
             <span className="text-xs text-stone-400">{report.author}</span>
           </div>
         </div>
