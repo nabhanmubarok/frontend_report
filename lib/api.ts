@@ -40,6 +40,10 @@ export const authApi = {
     api.put("/users/profile", data),
   changePassword: (data: { oldPassword: string; newPassword: string }) =>
     api.put("/users/profile/change-password", data),
+  updateAvatar: (formData: FormData) =>
+  api.put("/users/profile/avatar", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
 };
 
 // ===== REPORTS =====
