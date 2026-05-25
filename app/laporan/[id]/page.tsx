@@ -227,7 +227,7 @@ export default function ReportDetailPage() {
                               <Pencil className="w-3.5 h-3.5" />
                             </button>
                           )}
-                          {(user?.id === c.user_id || isAdmin(user)) && editingId !== c.id && (
+                          {(user?.id === c.user_id (user)) && editingId !== c.id && (
                             <button onClick={() => deleteComment(c.id)}
                               className="text-stone-300 hover:text-red-500 transition-colors">
                               <Trash2 className="w-3.5 h-3.5" />
