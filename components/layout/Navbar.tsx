@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import NotificationBell from "@/components/ui/NotificationBell";
+import { authApi } from "@/lib/api";
 
 export default function Navbar() {
   const router = useRouter();
@@ -24,10 +25,17 @@ export default function Navbar() {
   const [user, setUser] = useState<ReturnType<typeof getUser>>(null);
   const [dropOpen, setDropOpen] = useState(false);
 
-  useEffect(() => {
-    setUser(getUser());
-  }, []);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
+useEffect(() => {
+  const u = getUser();
+  setUser(u);
+  if (u) {
+    authApi.getProfile().then((r) => {
+      if (r.data.data.avatar) setAvatar(r.data.data.avatar);
+    }).catch(() => {});
+  }
+}, []);
   const handleLogout = () => {
     clearAuth();
     toast.success("Berhasil keluar");
@@ -84,9 +92,13 @@ export default function Navbar() {
                 onClick={() => setDropOpen(!dropOpen)}
                 className="flex items-center gap-2 bg-stone-100 hover:bg-stone-200 rounded-xl px-3 py-2 transition-colors"
               >
-                <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-                  {user.username.charAt(0).toUpperCase()}
-                </div>
+                {avatar ? (
+  <img src={avatar} alt="avatar" className="w-7 h-7 rounded-full object-cover" />
+) : (
+  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+    {user.username.charAt(0).toUpperCase()}
+  </div>
+)}
                 <span className="text-sm font-bold text-stone-700 max-w-24 truncate">
                   {user.username}
                 </span>
