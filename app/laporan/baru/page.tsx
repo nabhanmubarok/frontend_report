@@ -27,6 +27,11 @@ export default function CreateReportPage() {
   useEffect(() => {
     const user = getUser();
     if (!user) { toast.error("Silakan login terlebih dahulu"); router.push("/login"); return; }
+     if (user.role !== "user") {
+    toast.error("Hanya akun dengan role 'user' yang dapat membuat laporan");
+    router.push("/dashboard");
+    return;
+  }
     reportApi.getCategories().then((r) => setCategories(r.data.data));
   }, []);
 

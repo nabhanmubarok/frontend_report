@@ -78,7 +78,7 @@ export default function DashboardPage() {
             </h1>
             <p className="text-stone-500 mt-1">Pantau dan temukan laporan pengaduan masyarakat</p>
           </div>
-          {user && (
+          {user?.role === "user" && (
             <Link href="/laporan/baru" className="btn-primary flex items-center gap-2 self-start">
               <FilePlus className="w-4 h-4" />
               Buat Laporan
