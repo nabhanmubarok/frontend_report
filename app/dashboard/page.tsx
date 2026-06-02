@@ -70,37 +70,9 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-cream-light">
       <Navbar />
       <div className="max-w-6xl mx-auto px-6 pt-24 pb-12">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="font-display text-3xl font-bold text-stone-800">
-              {user ? `Halo, ${user.username} 👋` : "Dashboard Laporan"}
-            </h1>
-            <p className="text-stone-500 mt-1">Pantau dan temukan laporan pengaduan masyarakat</p>
-          </div>
-          {user?.role === "user" && (
-            <Link href="/laporan/baru" className="btn-primary flex items-center gap-2 self-start">
-              <FilePlus className="w-4 h-4" />
-              Buat Laporan
-            </Link>
-          )}
-        </div>
+        
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          {[
-            { label: "Total Laporan", value: pagination.total, color: "bg-primary/10 text-primary" },
-            { label: "Menunggu", value: stats.pending, color: "bg-amber-100 text-amber-700" },
-            { label: "Disetujui", value: stats.approved, color: "bg-sage/10 text-sage-dark" },
-          ].map((s) => (
-            <div key={s.label} className="card p-4 text-center">
-              <div className={`text-3xl font-display font-bold mb-1 ${s.color.split(" ")[1]}`}>
-                {s.value}
-              </div>
-              <div className="text-stone-500 text-sm">{s.label}</div>
-            </div>
-          ))}
-        </div>
+        
 
         {/* Filters */}
         <div className="card p-4 mb-6 flex flex-col md:flex-row gap-3">
