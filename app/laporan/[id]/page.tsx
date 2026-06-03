@@ -28,19 +28,19 @@ export default function ReportDetailPage() {
   const [editText, setEditText] = useState("");
   const [editLoading, setEditLoading] = useState(false);
   const [liked, setLiked] = useState(false);
-const [likeCount, setLikeCount] = useState(0);
+  const [likeCount, setLikeCount] = useState(0);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
- useEffect(() => {
-  const { getUser: _getUser } = require("@/lib/auth");
-  const u = _getUser();
-  setUser(u);
-  if (u) {
-    authApi.getProfile().then((r) => {
-      if (r.data.data.avatar) setAvatar(r.data.data.avatar);
-    }).catch(() => {});
-  }
-}, []);
-  
+  useEffect(() => {
+    const { getUser: _getUser } = require("@/lib/auth");
+    const u = _getUser();
+    setUser(u);
+    if (u) {
+      authApi.getProfile().then((r) => {
+        if (r.data.data.avatar) setAvatar(r.data.data.avatar);
+      }).catch(() => {});
+    }
+  }, []);
 
   const loadReport = async () => {
     try {
@@ -58,24 +58,25 @@ const [likeCount, setLikeCount] = useState(0);
       setLoading(false);
     }
   };
-  const handleLike = async () => {
-  if (!user) { toast.error("Login untuk menyukai laporan"); return; }
-  try {
-    const res = await reportApi.toggleLike(Number(id));
-    setLiked(res.data.liked);
-    setLikeCount(prev => res.data.liked ? prev + 1 : prev - 1);
-  } catch { toast.error("Gagal"); }
-};
 
-const handleShare = () => {
-  const url = window.location.href;
-  if (navigator.share) {
-    navigator.share({ title: report.header, text: report.body, url });
-  } else {
-    navigator.clipboard.writeText(url);
-    toast.success("Link disalin!");
-  }
-};
+  const handleLike = async () => {
+    if (!user) { toast.error("Login untuk menyukai laporan"); return; }
+    try {
+      const res = await reportApi.toggleLike(Number(id));
+      setLiked(res.data.liked);
+      setLikeCount(prev => res.data.liked ? prev + 1 : prev - 1);
+    } catch { toast.error("Gagal"); }
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: report.header, text: report.body, url });
+    } else {
+      navigator.clipboard.writeText(url);
+      toast.success("Link disalin!");
+    }
+  };
 
   useEffect(() => { loadReport(); }, [id]);
 
@@ -123,7 +124,6 @@ const handleShare = () => {
       toast.error("Gagal menghapus komentar");
     }
   };
-  const [avatar, setAvatar] = useState<string | null>(null);
 
   const updateStatus = async (status: string) => {
     try {
@@ -153,9 +153,6 @@ const handleShare = () => {
   );
   if (!report) return null;
 
-  
-
-  // Letakkan SETELAH null check
   const imageUrl = getImageUrl(report.image);
   const isOwner = user?.id === report.user_id;
 
@@ -182,20 +179,45 @@ const handleShare = () => {
                   className="w-full rounded-xl mb-4 max-h-80 object-cover" />
               )}
               <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{report.body}</p>
+              
+              {/* Catatan Penolakan */}
               {report.status === "rejected" && report.rejection_note && (
-  <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
-    <p className="text-sm font-bold text-red-700 mb-1">Alasan Penolakan:</p>
-    <p className="text-sm text-red-600">{report.rejection_note}</p>
-  </div>
-)}
+                <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+                  <p className="text-sm font-bold text-red-700 mb-1">Alasan Penolakan:</p>
+                  <p className="text-sm text-red-600">{report.rejection_note}</p>
+                </div>
+              )}
+
+              {/* Metadata Laporan */}
               <div className="mt-4 flex flex-wrap gap-3 text-sm text-stone-500 pt-4 border-t border-stone-100">
                 <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{report.author}</div>
                 <div className="flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" />{report.category_name}</div>
                 <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formatDate(report.created_at)}</div>
-                
+              </div>
+
+              {/* Tombol Like, Share, Edit Laporan */}
+              <div className="flex items-center gap-3 mt-4 pt-4 border-t border-stone-100">
+                <button onClick={handleLike}
+                  className={`flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg transition-colors ${
+                    liked ? "bg-red-50 text-red-500" : "bg-stone-100 text-stone-500 hover:bg-red-50 hover:text-red-500"
+                  }`}>
+                  <Heart className={`w-4 h-4 ${liked ? "fill-red-500" : ""}`} />
+                  {likeCount}
+                </button>
+                <button onClick={handleShare}
+                  className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors">
+                  <Share2 className="w-4 h-4" /> Bagikan
+                </button>
+                {isOwner && report.status === "pending" && (
+                  <Link href={`/laporan/edit/${id}`}
+                    className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors ml-auto">
+                    <Pencil className="w-4 h-4" /> Edit Laporan
+                  </Link>
+                )}
               </div>
             </div>
 
+            {/* Bagian Komentar */}
             <div className="card p-6">
               <h2 className="font-display font-semibold text-stone-700 mb-5 flex items-center gap-2">
                 <MessageCircle className="w-4 h-4 text-primary" />
@@ -205,12 +227,12 @@ const handleShare = () => {
               {user ? (
                 <div className="flex gap-3 mb-6">
                   {avatar ? (
-  <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-) : (
-  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
-    {user.username.charAt(0).toUpperCase()}
-  </div>
-)}
+                    <img src={avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                      {user.username.charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div className="flex-1">
                     <textarea placeholder="Tulis komentar Anda..."
                       value={commentText} onChange={(e) => setCommentText(e.target.value)}
@@ -238,37 +260,18 @@ const handleShare = () => {
                 ) : comments.map((c: any) => (
                   <div key={c.id} className="flex gap-3">
                     {c.commenter_avatar ? (
-  <img src={c.commenter_avatar} alt={c.commenter}
-    className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
-) : (
-  <div className="w-8 h-8 rounded-full bg-secondary text-stone-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
-    {c.commenter.charAt(0).toUpperCase()}
-  </div>
-)}
+                      <img src={c.commenter_avatar} alt={c.commenter}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-secondary text-stone-700 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {c.commenter.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-bold text-stone-700">{c.commenter}</span>
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs text-stone-400">{formatDate(c.created_at)}</span>
-                          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-stone-100">
-                          <button onClick={handleLike}
-                          className={`flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg transition-colors ${
-                            liked ? "bg-red-50 text-red-500" : "bg-stone-100 text-stone-500 hover:bg-red-50 hover:text-red-500"
-                            }`}>
-    <Heart className={`w-4 h-4 ${liked ? "fill-red-500" : ""}`} />
-    {likeCount}
-  </button>
-  <button onClick={handleShare}
-    className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors">
-    <Share2 className="w-4 h-4" /> Bagikan
-  </button>
-  {isOwner && report.status === "pending" && (
-    <Link href={`/laporan/edit/${id}`}
-      className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors ml-auto">
-      <Pencil className="w-4 h-4" /> Edit Laporan
-    </Link>
-  )}
-</div>
                           {user?.id === c.user_id && editingId !== c.id && (
                             <button onClick={() => startEdit(c)}
                               className="text-stone-300 hover:text-primary transition-colors">
@@ -308,6 +311,7 @@ const handleShare = () => {
             </div>
           </div>
 
+          {/* Sidebar Kanan */}
           <div className="space-y-5">
             {(report.address || report.latitude) && (
               <div className="card p-5">

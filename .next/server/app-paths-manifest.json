@@ -1,6 +1,8 @@
 {
-  "/page": "app/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/laporan/[id]/page": "app/laporan/[id]/page.js",
+  "/laporan/baru/page": "app/laporan/baru/page.js",
+  "/laporan/edit/[id]/page": "app/laporan/edit/[id]/page.js",
   "/login/page": "app/login/page.js",
-  "/dashboard/statistik/page": "app/dashboard/statistik/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/admin/laporan/page": "app/admin/laporan/page.js"
 }

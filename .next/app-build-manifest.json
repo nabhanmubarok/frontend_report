@@ -21,10 +21,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/dashboard/page.js"
     ],
-    "/dashboard/statistik/page": [
+    "/laporan/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/dashboard/statistik/page.js"
+      "static/chunks/app/laporan/[id]/page.js"
+    ],
+    "/laporan/saya/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/laporan/saya/page.js"
+    ],
+    "/laporan/baru/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/laporan/baru/page.js"
+    ],
+    "/admin/laporan/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/laporan/page.js"
+    ],
+    "/laporan/edit/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/laporan/edit/[id]/page.js"
     ]
   }
 }
