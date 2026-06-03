@@ -22,6 +22,7 @@ interface Report {
   address: string | null;
   image: string | null;
   comment_count: number;
+  like_count?: number; 
   created_at: string;
 }
 
