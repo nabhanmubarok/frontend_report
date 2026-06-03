@@ -9,6 +9,8 @@ import { getUser, isAdmin } from "@/lib/auth";
 import { formatDate } from "@/lib/utils";
 import toast from "react-hot-toast";
 import { CheckCircle, XCircle, Clock, Trash2, Eye, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import { exportToExcel } from "@/lib/excel";
+import { Download } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLaporanPage() {
@@ -19,6 +21,7 @@ export default function AdminLaporanPage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
+  const [rejectModal, setRejectModal] = useState<{ id: number | null; note: string }>({ id: null, note: "" });
 
   useEffect(() => {
     if (!isAdmin(user)) {
@@ -40,14 +43,12 @@ export default function AdminLaporanPage() {
 
   useEffect(() => { loadReports(); }, [statusFilter, page]);
 
-  const updateStatus = async (id: number, status: string) => {
+  const updateStatus = async (id: number, status: string, note?: string) => {
     try {
-      await reportApi.updateStatus(id, status);
+      await reportApi.updateStatus(id, status, note);
       toast.success("Status diperbarui");
       loadReports();
-    } catch {
-      toast.error("Gagal memperbarui status");
-    }
+    } catch { toast.error("Gagal memperbarui status"); }
   };
 
   const deleteReport = async (id: number) => {
@@ -83,6 +84,13 @@ export default function AdminLaporanPage() {
             <option value="approved">Disetujui</option>
             <option value="rejected">Ditolak</option>
           </select>
+          <button
+    onClick={() => exportToExcel(reports, "laporan")}
+    className="flex items-center gap-2 text-sm font-bold bg-sage/10 text-sage-dark hover:bg-sage/20 px-4 py-2 rounded-lg transition-colors"
+  >
+    <Download className="w-4 h-4" /> Export CSV
+  </button>
+          
           <span className="text-sm text-stone-400 ml-auto">
             Total: <strong className="text-stone-700">{pagination.total}</strong> laporan
           </span>
@@ -143,8 +151,9 @@ export default function AdminLaporanPage() {
                               >
                                 <CheckCircle className="w-4 h-4" />
                               </button>
+                              {/* Tombol Tolak - membuka modal */}
                               <button
-                                onClick={() => updateStatus(r.id, "rejected")}
+                                onClick={() => setRejectModal({ id: r.id, note: "" })}
                                 disabled={r.status === "rejected"}
                                 className="p-1.5 rounded-lg text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors disabled:opacity-30"
                                 title="Tolak"
@@ -198,6 +207,40 @@ export default function AdminLaporanPage() {
           </>
         )}
       </div>
+
+      {/* Modal Tolak Laporan */}
+      {rejectModal.id && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-slide-up">
+            <h2 className="font-display text-xl font-bold text-stone-800 mb-2">Tolak Laporan</h2>
+            <p className="text-stone-500 text-sm mb-4">Tambahkan catatan alasan penolakan (opsional)</p>
+            <textarea
+              value={rejectModal.note}
+              onChange={(e) => setRejectModal({ ...rejectModal, note: e.target.value })}
+              placeholder="Contoh: Laporan duplikat, informasi tidak lengkap..."
+              className="input resize-none mb-4"
+              rows={3}
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setRejectModal({ id: null, note: "" })}
+                className="btn-outline flex-1"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  updateStatus(rejectModal.id!, "rejected", rejectModal.note);
+                  setRejectModal({ id: null, note: "" });
+                }}
+                className="btn-danger flex-1"
+              >
+                Tolak Laporan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   User,
   ShieldCheck,
   BarChart2,
+  FileText,
 } from "lucide-react";
 import { getUser, clearAuth, isAdmin, isSuperAdmin } from "@/lib/auth";
 import { useEffect, useState } from "react";
@@ -44,6 +45,7 @@ useEffect(() => {
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/laporan/saya", label: "Laporan Saya", icon: FileText },
     { href: "/laporan/baru", label: "Buat Laporan", icon: FilePlus },
     ...(isAdmin(user)
       ? [{ href: "/dashboard/statistik", label: "Statistik", icon: BarChart2 }]

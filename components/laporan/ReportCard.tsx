@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, MessageCircle, Calendar, Tag } from "lucide-react";
+import { MapPin, MessageCircle, Calendar, Tag, Heart } from "lucide-react";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { formatDate, getImageUrl } from "@/lib/utils";
 import Image from "next/image";
@@ -10,12 +10,13 @@ interface Report {
   body: string;
   status: string;
   author: string;
+  author_avatar: string | null;
   category_name: string;
   address: string | null;
   image: string | null;
   comment_count: number;
+  like_count: number;
   created_at: string;
-  author_avatar: string | null;
 }
 
 export default function ReportCard({ report }: { report: Report }) {
@@ -26,11 +27,8 @@ export default function ReportCard({ report }: { report: Report }) {
       <div className="card hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group cursor-pointer">
         {imageUrl && (
           <div className="relative w-full h-40 overflow-hidden">
-            <img
-              src={imageUrl}
-              alt={report.header}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            />
+            <img src={imageUrl} alt={report.header}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           </div>
         )}
         <div className="p-5">
@@ -40,13 +38,10 @@ export default function ReportCard({ report }: { report: Report }) {
             </h3>
             <StatusBadge status={report.status} />
           </div>
-
           <p className="text-stone-500 text-sm line-clamp-2 mb-4">{report.body}</p>
-
           <div className="flex flex-wrap gap-3 text-xs text-stone-400">
             <div className="flex items-center gap-1">
-              <Tag className="w-3 h-3" />
-              {report.category_name}
+              <Tag className="w-3 h-3" />{report.category_name}
             </div>
             {report.address && (
               <div className="flex items-center gap-1">
@@ -55,23 +50,24 @@ export default function ReportCard({ report }: { report: Report }) {
               </div>
             )}
             <div className="flex items-center gap-1">
-              <MessageCircle className="w-3 h-3" />
-              {report.comment_count} komentar
+              <MessageCircle className="w-3 h-3" />{report.comment_count}
+            </div>
+            <div className="flex items-center gap-1">
+              <Heart className="w-3 h-3" />{report.like_count || 0}
             </div>
             <div className="flex items-center gap-1 ml-auto">
-              <Calendar className="w-3 h-3" />
-              {formatDate(report.created_at)}
+              <Calendar className="w-3 h-3" />{formatDate(report.created_at)}
             </div>
           </div>
-
           <div className="mt-3 pt-3 border-t border-stone-100 flex items-center gap-2">
             {report.author_avatar ? (
-  <img src={report.author_avatar} alt={report.author} className="w-5 h-5 rounded-full object-cover" />
-) : (
-  <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
-    {report.author.charAt(0).toUpperCase()}
-  </div>
-)}
+              <img src={report.author_avatar} alt={report.author}
+                className="w-5 h-5 rounded-full object-cover" />
+            ) : (
+              <div className="w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">
+                {report.author.charAt(0).toUpperCase()}
+              </div>
+            )}
             <span className="text-xs text-stone-400">{report.author}</span>
           </div>
         </div>

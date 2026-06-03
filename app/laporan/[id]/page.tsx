@@ -8,9 +8,10 @@ import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { reportApi, commentApi, authApi } from "@/lib/api";
 import { getUser, isAdmin } from "@/lib/auth";
 import { formatDate, getImageUrl } from "@/lib/utils";
+
 import {
   MapPin, Calendar, User, Tag, MessageCircle, Send, Trash2, ArrowLeft,
-  CheckCircle, XCircle, Clock, Pencil, X, Check,
+  CheckCircle, XCircle, Clock, Pencil, X, Check, Heart, Share2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -26,6 +27,8 @@ export default function ReportDetailPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [liked, setLiked] = useState(false);
+const [likeCount, setLikeCount] = useState(0);
 
  useEffect(() => {
   const { getUser: _getUser } = require("@/lib/auth");
@@ -46,6 +49,7 @@ export default function ReportDetailPage() {
         commentApi.getByReport(Number(id)),
       ]);
       setReport(rr.data.data);
+      setLikeCount(rr.data.data.like_count || 0);
       setComments(cr.data.data);
     } catch {
       toast.error("Laporan tidak ditemukan");
@@ -54,6 +58,24 @@ export default function ReportDetailPage() {
       setLoading(false);
     }
   };
+  const handleLike = async () => {
+  if (!user) { toast.error("Login untuk menyukai laporan"); return; }
+  try {
+    const res = await reportApi.toggleLike(Number(id));
+    setLiked(res.data.liked);
+    setLikeCount(prev => res.data.liked ? prev + 1 : prev - 1);
+  } catch { toast.error("Gagal"); }
+};
+
+const handleShare = () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({ title: report.header, text: report.body, url });
+  } else {
+    navigator.clipboard.writeText(url);
+    toast.success("Link disalin!");
+  }
+};
 
   useEffect(() => { loadReport(); }, [id]);
 
@@ -160,10 +182,17 @@ export default function ReportDetailPage() {
                   className="w-full rounded-xl mb-4 max-h-80 object-cover" />
               )}
               <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">{report.body}</p>
+              {report.status === "rejected" && report.rejection_note && (
+  <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+    <p className="text-sm font-bold text-red-700 mb-1">Alasan Penolakan:</p>
+    <p className="text-sm text-red-600">{report.rejection_note}</p>
+  </div>
+)}
               <div className="mt-4 flex flex-wrap gap-3 text-sm text-stone-500 pt-4 border-t border-stone-100">
                 <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{report.author}</div>
                 <div className="flex items-center gap-1.5"><Tag className="w-3.5 h-3.5" />{report.category_name}</div>
                 <div className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" />{formatDate(report.created_at)}</div>
+                
               </div>
             </div>
 
@@ -221,6 +250,25 @@ export default function ReportDetailPage() {
                         <span className="text-sm font-bold text-stone-700">{c.commenter}</span>
                         <div className="flex items-center gap-1.5">
                           <span className="text-xs text-stone-400">{formatDate(c.created_at)}</span>
+                          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-stone-100">
+                          <button onClick={handleLike}
+                          className={`flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg transition-colors ${
+                            liked ? "bg-red-50 text-red-500" : "bg-stone-100 text-stone-500 hover:bg-red-50 hover:text-red-500"
+                            }`}>
+    <Heart className={`w-4 h-4 ${liked ? "fill-red-500" : ""}`} />
+    {likeCount}
+  </button>
+  <button onClick={handleShare}
+    className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors">
+    <Share2 className="w-4 h-4" /> Bagikan
+  </button>
+  {isOwner && report.status === "pending" && (
+    <Link href={`/laporan/edit/${id}`}
+      className="flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 transition-colors ml-auto">
+      <Pencil className="w-4 h-4" /> Edit Laporan
+    </Link>
+  )}
+</div>
                           {user?.id === c.user_id && editingId !== c.id && (
                             <button onClick={() => startEdit(c)}
                               className="text-stone-300 hover:text-primary transition-colors">

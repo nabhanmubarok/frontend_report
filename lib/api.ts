@@ -64,11 +64,17 @@ export const reportApi = {
       headers: { "Content-Type": "multipart/form-data" },
     }),
   delete: (id: number) => api.delete(`/reports/${id}`),
-  updateStatus: (id: number, status: string) =>
-    api.patch(`/reports/${id}/status`, { status }),
+  getMyReports: (params?: { page?: number; limit?: number }) =>
+  api.get("/reports/my-reports", { params }),
+toggleLike: (id: number) => api.post(`/reports/${id}/like`),
+updateStatus: (id: number, status: string, rejection_note?: string) =>
+  api.patch(`/reports/${id}/status`, { status, rejection_note }),
+assignReport: (id: number, assigned_to: number | null) =>
+  api.patch(`/reports/${id}/assign`, { assigned_to }),
   getCategories: () => api.get("/reports/categories"),
   createCategory: (category_name: string) =>
     api.post("/reports/categories", { category_name }),
+  
 };
 
 // ===== COMMENTS =====
